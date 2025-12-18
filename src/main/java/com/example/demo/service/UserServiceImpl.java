@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
     @Autowired private UserRepository userRepository;
     @Autowired private RoleRepository roleRepository;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    //private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public User registerUser(User user) {
