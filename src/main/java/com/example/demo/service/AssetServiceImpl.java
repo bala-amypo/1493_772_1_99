@@ -24,12 +24,17 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset createAsset(Long vendorId, Long ruleId, Asset asset) {
+
         Vendor vendor = vendorRepo.findById(vendorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
+
         DepreciationRule rule = ruleRepo.findById(ruleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rule not found"));
 
-        if (asset.getPurchaseCost() <= 0)
+        if (asset.getAssetTag() == null || asset.getAssetTag().isBlank())
+            throw new IllegalArgumentException("Asset tag required");
+
+        if (asset.getPurchaseCost() == null || asset.getPurchaseCost() <= 0)
             throw new IllegalArgumentException("Purchase cost must be positive");
 
         if (assetRepo.existsByAssetTag(asset.getAssetTag()))
