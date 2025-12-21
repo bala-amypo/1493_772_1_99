@@ -17,9 +17,14 @@ public class DepreciationRuleServiceImpl implements DepreciationRuleService {
 
     @Override
     public DepreciationRule createRule(DepreciationRule rule) {
-        if (rule.getUsefulLifeYears() <= 0)
+
+        if (rule.getRuleName() == null || rule.getRuleName().isBlank())
+            throw new IllegalArgumentException("Rule name required");
+
+        if (rule.getUsefulLifeYears() == null || rule.getUsefulLifeYears() <= 0)
             throw new IllegalArgumentException("Invalid useful life");
-        if (rule.getSalvageValue() < 0)
+
+        if (rule.getSalvageValue() == null || rule.getSalvageValue() < 0)
             throw new IllegalArgumentException("Invalid salvage value");
 
         rule.setCreatedAt(LocalDateTime.now());

@@ -17,10 +17,14 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public Vendor createVendor(Vendor vendor) {
+
+        if (vendor.getVendorName() == null || vendor.getVendorName().isBlank())
+            throw new IllegalArgumentException("Vendor name required");
+
         vendorRepo.findByVendorName(vendor.getVendorName())
                 .ifPresent(v -> { throw new IllegalArgumentException("Vendor already exists"); });
 
-        if (!vendor.getContactEmail().contains("@"))
+        if (vendor.getContactEmail() == null || !vendor.getContactEmail().contains("@"))
             throw new IllegalArgumentException("Invalid email");
 
         vendor.setCreatedAt(LocalDateTime.now());

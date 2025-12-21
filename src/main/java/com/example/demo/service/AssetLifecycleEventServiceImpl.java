@@ -21,23 +21,31 @@ public class AssetLifecycleEventServiceImpl implements AssetLifecycleEventServic
 
     @Override
     public AssetLifecycleEvent logEvent(Long assetId, AssetLifecycleEvent event) {
+
         Asset asset = assetRepo.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
 
-        if (event.getEventType() == null || event.getEventDescription().isBlank())
-            throw new IllegalArgumentException("Invalid event");
-        if (event.getEventDate().isAfter(LocalDate.now()))
-            throw new IllegalArgumentException("Future date not allowed");
+        if (event.getEventType() == null || event.getEventType().isBlank())
+            throw new IllegalArgumentException("Event type required");
+
+        if (event.getEventDescription() == null || event.getEventDescription().isBlank())
+            throw new IllegalArgumentException("Event description required");
+
+        if (event.getEventDate() == null || event.getEventDate().isAfter(LocalDate.now()))
+            throw new IllegalArgumentException("Invalid event date");
 
         event.setAsset(asset);
         event.setLoggedAt(LocalDateTime.now());
+
         return eventRepo.save(event);
     }
 
     @Override
     public List<AssetLifecycleEvent> getEventsForAsset(Long assetId) {
+
         assetRepo.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
+
         return eventRepo.findByAssetIdOrderByEventDateDesc(assetId);
     }
 }
