@@ -1,17 +1,34 @@
 package com.example.demo.service;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.List;
 import com.example.demo.entity.Vendor;
 import com.example.demo.repository.VendorRepository;
 
 @Service
 public class VendorServiceImpl implements VendorService {
-    @Autowired private VendorRepository vendorRepo;
+
+    private final VendorRepository vendorRepo;
+
+    public VendorServiceImpl(VendorRepository vendorRepo) {
+        this.vendorRepo = vendorRepo;
+    }
 
     @Override
-    public Vendor createVendor(Vendor v){ return vendorRepo.save(v); }
+    public Vendor createVendor(Vendor vendor) {
+        vendorRepo.findByVendorName(vendor.getVendorName())
+                .ifPresent(v -> { throw new IllegalArgumentException("Vendor already exists"); });
+
+        if (!vendor.getContactEmail().contains("@"))
+            throw new IllegalArgumentException("Invalid email");
+
+        vendor.setCreatedAt(LocalDateTime.now());
+        return vendorRepo.save(vendor);
+    }
 
     @Override
-    public List<Vendor> getAllVendors(){ return vendorRepo.findAll(); }
+    public List<Vendor> getAllVendors() {
+        return vendorRepo.findAll();
+    }
 }

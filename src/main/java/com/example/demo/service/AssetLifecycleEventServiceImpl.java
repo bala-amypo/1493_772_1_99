@@ -1,25 +1,43 @@
 package com.example.demo.service;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
-import com.example.demo.entity.AssetLifecycleEvent;
-import com.example.demo.entity.Asset;
+import java.time.*;
+import java.util.List;
+import com.example.demo.entity.*;
 import com.example.demo.repository.*;
+import com.example.demo.exception.ResourceNotFoundException;
 
 @Service
 public class AssetLifecycleEventServiceImpl implements AssetLifecycleEventService {
-    @Autowired AssetLifecycleEventRepository repo;
-    @Autowired AssetRepository assetRepo;
 
-    @Override
-    public AssetLifecycleEvent logEvent(Long assetId, AssetLifecycleEvent event){
-        Asset asset = assetRepo.findById(assetId).orElse(null);
-        event.setAsset(asset);
-        return repo.save(event);
+    private final AssetLifecycleEventRepository eventRepo;
+    private final AssetRepository assetRepo;
+
+    public AssetLifecycleEventServiceImpl(AssetLifecycleEventRepository eventRepo,
+                                          AssetRepository assetRepo) {
+        this.eventRepo = eventRepo;
+        this.assetRepo = assetRepo;
     }
 
     @Override
-    public List<AssetLifecycleEvent> getEventsForAsset(Long assetId){
-        return repo.findByAssetId(assetId);
+    public AssetLifecycleEvent logEvent(Long assetId, AssetLifecycleEvent event) {
+        Asset asset = assetRepo.findById(assetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
+
+        if (event.getEventType() == null || event.getEventDescription().isBlank())
+            throw new IllegalArgumentException("Invalid event");
+        if (event.getEventDate().isAfter(LocalDate.now()))
+            throw new IllegalArgumentException("Future date not allowed");
+
+        event.setAsset(asset);
+        event.setLoggedAt(LocalDateTime.now());
+        return eventRepo.save(event);
+    }
+
+    @Override
+    public List<AssetLifecycleEvent> getEventsForAsset(Long assetId) {
+        assetRepo.findById(assetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
+        return eventRepo.findByAssetIdOrderByEventDateDesc(assetId);
     }
 }
