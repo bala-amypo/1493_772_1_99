@@ -1,23 +1,34 @@
 package com.example.demo.entity;
+
+
 import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
+
 
 @Entity
+@Table(name = "asset_lifecycle_events")
 public class AssetLifecycleEvent {
-    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Long id;
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
 
-    @ManyToOne
-    private Asset asset;
 
-    private String eventType;
-    private String eventDescription;
-    private LocalDate eventDate;
-    private LocalDateTime loggedAt = LocalDateTime.now();
+private String eventType;
+private String eventDescription;
+private LocalDate eventDate;
+private LocalDateTime loggedAt;
 
-    public void setAsset(Asset a){ asset=a; }
-    public void setEventType(String t){ eventType=t; }
-    public void setEventDescription(String d){ eventDescription=d; }
-    public void setEventDate(LocalDate d){ eventDate=d; }
+
+@ManyToOne
+private Asset asset;
+
+
+public AssetLifecycleEvent() {}
+
+
+public void setAsset(Asset asset) { this.asset = asset; }
+public void setLoggedAt(LocalDateTime t) { this.loggedAt = t; }
+public String getEventType() { return eventType; }
+public String getEventDescription() { return eventDescription; }
+public LocalDate getEventDate() { return eventDate; }
 }
