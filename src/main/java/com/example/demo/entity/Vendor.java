@@ -35,20 +35,17 @@ this.createdAt = LocalDateTime.now();
 public Long getId() { return id; }
 
 
-public List<Vendor> getContactEmail() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getContactEmail'");
+// Vendor
+public String getContactEmail() {
+    return contactEmail;
 }
-
-
-public void setCreatedAt(LocalDateTime now) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setCreatedAt'");
-}
-
 
 public String getVendorName() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getVendorName'");
+    return vendorName;
 }
+
+public void setCreatedAt(LocalDateTime now) {
+    this.createdAt = now;
+}
+
 }

@@ -41,15 +41,14 @@ public void setCreatedAt(LocalDateTime createdAt) {
 }
 
 
+// DepreciationRule
 public int getUsefulLifeYears() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getUsefulLifeYears'");
+    return usefulLifeYears;
 }
 
-
-public int getSalvageValue() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getSalvageValue'");
+public Double getSalvageValue() {
+    return salvageValue;
 }
+
 
 }
