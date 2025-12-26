@@ -7,38 +7,24 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "asset_lifecycle_events")
 public class AssetLifecycleEvent {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "asset_id")
     private Asset asset;
 
     private String eventType;
     private String eventDescription;
     private LocalDate eventDate;
-    private LocalDateTime loggedAt;
+    private LocalDateTime loggedAt = LocalDateTime.now();
 
-    public AssetLifecycleEvent() {}
-    public AssetLifecycleEvent(Asset asset, String eventType, String eventDescription, LocalDate eventDate) {
-        this.asset = asset;
-        this.eventType = eventType;
-        this.eventDescription = eventDescription;
-        this.eventDate = eventDate;
-        this.loggedAt = LocalDateTime.now();
-    }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Asset getAsset() { return asset; }
     public void setAsset(Asset asset) { this.asset = asset; }
-    public String getEventType() { return eventType; }
-    public void setEventType(String eventType) { this.eventType = eventType; }
-    public String getEventDescription() { return eventDescription; }
-    public void setEventDescription(String eventDescription) { this.eventDescription = eventDescription; }
-    public LocalDate getEventDate() { return eventDate; }
-    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
-    public LocalDateTime getLoggedAt() { return loggedAt; }
-    public void setLoggedAt(LocalDateTime loggedAt) { this.loggedAt = loggedAt; }
+    public void setEventDescription(String eventDescription) {
+        this.eventDescription = eventDescription;
+    }
+    public void setEventDate(LocalDate eventDate) {
+        this.eventDate = eventDate;
+    }
 }
