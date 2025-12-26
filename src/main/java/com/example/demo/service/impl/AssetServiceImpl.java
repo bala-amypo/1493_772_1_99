@@ -8,32 +8,44 @@ import com.example.demo.repository.AssetRepository;
 import com.example.demo.repository.DepreciationRuleRepository;
 import com.example.demo.repository.VendorRepository;
 import com.example.demo.service.AssetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 @Service
 public class AssetServiceImpl implements AssetService {
 
-    @Autowired private AssetRepository assetRepository;
-    @Autowired private VendorRepository vendorRepository;
-    @Autowired private DepreciationRuleRepository ruleRepository;
+    private final AssetRepository assetRepository;
+    private final VendorRepository vendorRepository;
+    private final DepreciationRuleRepository ruleRepository;
+
+    public AssetServiceImpl(AssetRepository assetRepository,
+                            VendorRepository vendorRepository,
+                            DepreciationRuleRepository ruleRepository) {
+        this.assetRepository = assetRepository;
+        this.vendorRepository = vendorRepository;
+        this.ruleRepository = ruleRepository;
+    }
 
     @Override
     public Asset createAsset(Long vendorId, Long ruleId, Asset asset) {
+
+        if (asset.getPurchaseCost() <= 0)
+            throw new IllegalArgumentException("Invalid cost");
+
+        if (assetRepository.existsByAssetTag(asset.getAssetTag()))
+            throw new IllegalArgumentException("Duplicate tag");
+
         Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
+
         DepreciationRule rule = ruleRepository.findById(ruleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rule not found"));
-
-        if (asset.getPurchaseCost() <= 0) throw new IllegalArgumentException("Cost must be > 0");
-        if (assetRepository.existsByAssetTag(asset.getAssetTag())) throw new IllegalArgumentException("Duplicate Tag");
 
         asset.setVendor(vendor);
         asset.setDepreciationRule(rule);
         asset.setStatus("ACTIVE");
-        asset.setCreatedAt(LocalDateTime.now());
+
         return assetRepository.save(asset);
     }
 
