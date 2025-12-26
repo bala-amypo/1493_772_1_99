@@ -27,6 +27,11 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
+    // --- REQUIRED BY TEST SUITE (Missing in previous version) ---
+    public Claims getClaims(String token) {
+        return extractAllClaims(token);
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
@@ -51,5 +56,11 @@ public class JwtUtil {
     public Boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
+    }
+
+    // --- REQUIRED BY TEST SUITE (Missing overloading) ---
+    // The tests call validateToken(token) directly without username
+    public Boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 }
