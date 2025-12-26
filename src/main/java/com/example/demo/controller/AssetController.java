@@ -9,7 +9,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/assets")
 public class AssetController {
-    
     @Autowired private AssetService assetService;
 
     @PostMapping("/{vendorId}/{ruleId}")
@@ -17,7 +16,7 @@ public class AssetController {
         return assetService.createAsset(vendorId, ruleId, asset);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<Asset> getAllAssets() {
         return assetService.getAllAssets();
     }
