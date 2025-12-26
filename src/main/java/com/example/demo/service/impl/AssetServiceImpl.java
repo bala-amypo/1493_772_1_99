@@ -1,66 +1,55 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
+import com.example.demo.entity.Asset;
+import com.example.demo.entity.DepreciationRule;
+import com.example.demo.entity.Vendor;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.AssetRepository;
+import com.example.demo.repository.DepreciationRuleRepository;
+import com.example.demo.repository.VendorRepository;
+import com.example.demo.service.AssetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
-import com.example.demo.entity.*;
-import com.example.demo.repository.*;
-import com.example.demo.exception.ResourceNotFoundException;
 
 @Service
 public class AssetServiceImpl implements AssetService {
 
-    private final AssetRepository assetRepo;
-    private final VendorRepository vendorRepo;
-    private final DepreciationRuleRepository ruleRepo;
-
-    public AssetServiceImpl(AssetRepository assetRepo,
-                            VendorRepository vendorRepo,
-                            DepreciationRuleRepository ruleRepo) {
-        this.assetRepo = assetRepo;
-        this.vendorRepo = vendorRepo;
-        this.ruleRepo = ruleRepo;
-    }
+    @Autowired private AssetRepository assetRepository;
+    @Autowired private VendorRepository vendorRepository;
+    @Autowired private DepreciationRuleRepository ruleRepository;
 
     @Override
     public Asset createAsset(Long vendorId, Long ruleId, Asset asset) {
-
-        Vendor vendor = vendorRepo.findById(vendorId)
+        Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));
-
-        DepreciationRule rule = ruleRepo.findById(ruleId)
+        DepreciationRule rule = ruleRepository.findById(ruleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rule not found"));
 
-        if (asset.getAssetTag() == null || asset.getAssetTag().isBlank())
-            throw new IllegalArgumentException("Asset tag required");
-
-        if (asset.getPurchaseCost() == null || asset.getPurchaseCost() <= 0)
-            throw new IllegalArgumentException("Purchase cost must be positive");
-
-        if (assetRepo.existsByAssetTag(asset.getAssetTag()))
-            throw new IllegalArgumentException("Duplicate asset tag");
+        if (asset.getPurchaseCost() <= 0) throw new IllegalArgumentException("Cost must be > 0");
+        if (assetRepository.existsByAssetTag(asset.getAssetTag())) throw new IllegalArgumentException("Duplicate Tag");
 
         asset.setVendor(vendor);
         asset.setDepreciationRule(rule);
         asset.setStatus("ACTIVE");
         asset.setCreatedAt(LocalDateTime.now());
-
-        return assetRepo.save(asset);
+        return assetRepository.save(asset);
     }
 
     @Override
     public List<Asset> getAllAssets() {
-        return assetRepo.findAll();
+        return assetRepository.findAll();
     }
 
     @Override
     public List<Asset> getAssetsByStatus(String status) {
-        return assetRepo.findByStatus(status);
+        return assetRepository.findByStatus(status);
     }
 
     @Override
     public Asset getAsset(Long id) {
-        return assetRepo.findById(id)
+        return assetRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
     }
 }
