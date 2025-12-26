@@ -9,15 +9,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rules")
 public class DepreciationRuleController {
-    
     @Autowired private DepreciationRuleService ruleService;
 
-    @PostMapping("/")
+    @PostMapping
     public DepreciationRule createRule(@RequestBody DepreciationRule rule) {
         return ruleService.createRule(rule);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<DepreciationRule> getAllRules() {
         return ruleService.getAllRules();
     }

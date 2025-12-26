@@ -9,15 +9,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vendors")
 public class VendorController {
-    
     @Autowired private VendorService vendorService;
 
-    @PostMapping("/")
+    @PostMapping
     public Vendor createVendor(@RequestBody Vendor vendor) {
         return vendorService.createVendor(vendor);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<Vendor> getAllVendors() {
         return vendorService.getAllVendors();
     }
