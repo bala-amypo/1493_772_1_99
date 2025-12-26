@@ -1,43 +1,52 @@
 package com.example.demo.entity;
 
-
 import jakarta.persistence.*;
-import java.time.*;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "assets")
 public class Asset {
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String assetTag;
+    private String assetName;
 
-@Column(unique = true)
-private String assetTag;
-private String assetName;
-private Double purchaseCost;
-private LocalDate purchaseDate;
-private String status;
-private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "vendor_id")
+    private Vendor vendor;
 
+    private LocalDate purchaseDate;
+    private Double purchaseCost;
 
-@ManyToOne
-private Vendor vendor;
+    @ManyToOne
+    @JoinColumn(name = "depreciation_rule_id")
+    private DepreciationRule depreciationRule;
 
+    private String status; // ACTIVE, MAINTENANCE, DISPOSED
+    private LocalDateTime createdAt;
 
-@ManyToOne
-private DepreciationRule depreciationRule;
+    public Asset() {}
 
-
-public Asset() {}
-
-
-public Long getId() { return id; }
-public void setVendor(Vendor v) { this.vendor = v; }
-public void setDepreciationRule(DepreciationRule r) { this.depreciationRule = r; }
-public void setStatus(String s) { this.status = s; }
-public void setCreatedAt(LocalDateTime t) { this.createdAt = t; }
-public Double getPurchaseCost() { return purchaseCost; }
-public String getAssetTag() { return assetTag; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getAssetTag() { return assetTag; }
+    public void setAssetTag(String assetTag) { this.assetTag = assetTag; }
+    public String getAssetName() { return assetName; }
+    public void setAssetName(String assetName) { this.assetName = assetName; }
+    public Vendor getVendor() { return vendor; }
+    public void setVendor(Vendor vendor) { this.vendor = vendor; }
+    public LocalDate getPurchaseDate() { return purchaseDate; }
+    public void setPurchaseDate(LocalDate purchaseDate) { this.purchaseDate = purchaseDate; }
+    public Double getPurchaseCost() { return purchaseCost; }
+    public void setPurchaseCost(Double purchaseCost) { this.purchaseCost = purchaseCost; }
+    public DepreciationRule getDepreciationRule() { return depreciationRule; }
+    public void setDepreciationRule(DepreciationRule depreciationRule) { this.depreciationRule = depreciationRule; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
