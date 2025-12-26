@@ -26,6 +26,7 @@ public class AssetDisposal {
     private LocalDateTime createdAt;
 
     public AssetDisposal() {}
+
     public AssetDisposal(Asset asset, String disposalMethod, Double disposalValue, LocalDate disposalDate, User approvedBy) {
         this.asset = asset;
         this.disposalMethod = disposalMethod;
