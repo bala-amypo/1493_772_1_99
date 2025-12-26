@@ -24,7 +24,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 // Server URL
                 .servers(List.of(
-                        new Server().url("https://9063.pro604cr.amypo.ai/")
+                        new Server().url("https://9017.pro604cr.amypo.ai/")
                 ))
                 // JWT Security Definition
                 .components(new Components()
