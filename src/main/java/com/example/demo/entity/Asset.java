@@ -26,18 +26,60 @@ public class Asset {
     private DepreciationRule depreciationRule;
 
     private String status = "ACTIVE";
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Long getId() { return id; }
-    public String getAssetTag() { return assetTag; }
+    // ===== GETTERS & SETTERS =====
 
-    public void setAssetTag(String assetTag) { this.assetTag = assetTag; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getAssetTag() {
+        return assetTag;
+    }
+
+    public Double getPurchaseCost() {
+        return purchaseCost;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public DepreciationRule getDepreciationRule() {
+        return depreciationRule;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setAssetTag(String assetTag) {
+        this.assetTag = assetTag;
+    }
+
+    public void setAssetName(String assetName) {
+        this.assetName = assetName;
+    }
+
+    public void setPurchaseDate(LocalDate purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
     public void setPurchaseCost(Double purchaseCost) {
         this.purchaseCost = purchaseCost;
     }
-    public void setVendor(Vendor vendor) { this.vendor = vendor; }
-    public void setDepreciationRule(DepreciationRule rule) {
-        this.depreciationRule = rule;
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
     }
-    public void setStatus(String status) { this.status = status; }
+
+    public void setDepreciationRule(DepreciationRule depreciationRule) {
+        this.depreciationRule = depreciationRule;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

@@ -24,13 +24,40 @@ public class AssetDisposal {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Long getId() { return id; }
-    public Asset getAsset() { return asset; }
+    // ===== GETTERS & SETTERS =====
 
-    public void setAsset(Asset asset) { this.asset = asset; }
+    public Long getId() {
+        return id;
+    }
+
+    public Asset getAsset() {
+        return asset;
+    }
+
+    public Double getDisposalValue() {
+        return disposalValue;
+    }
+
+    public User getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setAsset(Asset asset) {
+        this.asset = asset;
+    }
+
+    public void setDisposalMethod(String disposalMethod) {
+        this.disposalMethod = disposalMethod;
+    }
+
     public void setDisposalValue(Double disposalValue) {
         this.disposalValue = disposalValue;
     }
+
+    public void setDisposalDate(LocalDate disposalDate) {
+        this.disposalDate = disposalDate;
+    }
+
     public void setApprovedBy(User approvedBy) {
         this.approvedBy = approvedBy;
     }

@@ -17,16 +17,43 @@ public class DepreciationRule {
     private String method;
     private Integer usefulLifeYears;
     private Double salvageValue;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Long getId() { return id; }
-    public String getRuleName() { return ruleName; }
+    // ===== GETTERS & SETTERS =====
 
-    public void setRuleName(String ruleName) { this.ruleName = ruleName; }
-    public void setMethod(String method) { this.method = method; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getRuleName() {
+        return ruleName;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public Integer getUsefulLifeYears() {
+        return usefulLifeYears;
+    }
+
+    public Double getSalvageValue() {
+        return salvageValue;
+    }
+
+    public void setRuleName(String ruleName) {
+        this.ruleName = ruleName;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
     public void setUsefulLifeYears(Integer usefulLifeYears) {
         this.usefulLifeYears = usefulLifeYears;
     }
+
     public void setSalvageValue(Double salvageValue) {
         this.salvageValue = salvageValue;
     }

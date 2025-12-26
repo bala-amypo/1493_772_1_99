@@ -18,10 +18,29 @@ public class Vendor {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Long getId() { return id; }
-    public String getVendorName() { return vendorName; }
+    // ===== GETTERS & SETTERS =====
 
-    public void setId(Long id) { this.id = id; }
-    public void setVendorName(String vendorName) { this.vendorName = vendorName; }
-    public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getVendorName() {
+        return vendorName;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setVendorName(String vendorName) {
+        this.vendorName = vendorName;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
 }
