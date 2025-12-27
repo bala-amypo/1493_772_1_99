@@ -1,90 +1,40 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthRequest;
-import com.example.demo.dto.AuthResponse;
-import com.example.demo.entity.Role;
-import com.example.demo.entity.User;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.util.JwtUtil;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.example.demo.entity.Asset;
+import com.example.demo.service.AssetService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @RestController
-@RequestMapping("/auth")
-public class AuthController {
+@RequestMapping("/api/assets")
+public class AssetController {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final JwtUtil jwtUtil;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final AssetService service;
 
-    public AuthController(UserRepository userRepository,
-                          RoleRepository roleRepository,
-                          JwtUtil jwtUtil,
-                          BCryptPasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
+    public AssetController(AssetService service) {
+        this.service = service;
     }
 
-    // -------- REGISTER --------
-    @PostMapping("/register")
-    public AuthResponse register(@RequestBody User user) {
-
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        Role role = roleRepository.findByName("USER")
-                .orElseGet(() -> roleRepository.save(new Role("USER")));
-
-        user.setRoles(Set.of(role));
-
-        User saved = userRepository.save(user);
-
-        Set<String> roles = saved.getRoles()
-                .stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-
-        String token = jwtUtil.generateToken(
-                saved.getEmail(),
-                saved.getId(),
-                roles
-        );
-
-        return new AuthResponse(token, saved.getId(), saved.getEmail(), roles);
+    @PostMapping("/{vendorId}/{ruleId}")
+    public Asset create(@PathVariable Long vendorId,
+                        @PathVariable Long ruleId,
+                        @RequestBody Asset asset) {
+        return service.createAsset(vendorId, ruleId, asset);
     }
 
-    // -------- LOGIN --------
-    @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
+    @GetMapping
+    public List<Asset> getAll() {
+        return service.getAllAssets();
+    }
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
+    @GetMapping("/{id}")
+    public Asset get(@PathVariable Long id) {
+        return service.getAsset(id);
+    }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Invalid credentials");
-        }
-
-        Set<String> roles = user.getRoles()
-                .stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-
-        String token = jwtUtil.generateToken(
-                user.getEmail(),
-                user.getId(),
-                roles
-        );
-
-        return new AuthResponse(token, user.getId(), user.getEmail(), roles);
+    @GetMapping("/status/{status}")
+    public List<Asset> byStatus(@PathVariable String status) {
+        return service.getAssetsByStatus(status);
     }
 }
