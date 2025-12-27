@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "vendors")
 public class Vendor {
 
     @Id
@@ -14,25 +13,19 @@ public class Vendor {
     @Column(unique = true, nullable = false)
     private String vendorName;
 
-    @Column(nullable = false)
     private String contactEmail;
-
     private String phone;
+    private LocalDateTime createdAt;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // ===== GETTERS & SETTERS =====
 
-    // ---------- Constructors ----------
-    public Vendor() {}
-
-    public Vendor(String vendorName, String contactEmail, String phone) {
-        this.vendorName = vendorName;
-        this.contactEmail = contactEmail;
-        this.phone = phone;
-    }
-
-    // ---------- Getters & Setters ----------
     public Long getId() {
         return id;
+    }
+
+    // ✅ ADD THIS (REQUIRED FOR TESTS)
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getVendorName() {
@@ -61,5 +54,9 @@ public class Vendor {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
