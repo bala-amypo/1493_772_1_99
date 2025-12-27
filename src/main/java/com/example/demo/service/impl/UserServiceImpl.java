@@ -39,3 +39,4 @@ public class UserServiceImpl implements UserService {
         user.getRoles().add(userRole);
         return userRepository.save(user);
     }
+}
