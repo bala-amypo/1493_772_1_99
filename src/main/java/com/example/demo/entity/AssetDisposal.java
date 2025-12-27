@@ -24,8 +24,7 @@ public class AssetDisposal {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // ===== GETTERS & SETTERS =====
-
+    // -------- GETTERS --------
     public Long getId() {
         return id;
     }
@@ -34,14 +33,27 @@ public class AssetDisposal {
         return asset;
     }
 
+    public String getDisposalMethod() {
+        return disposalMethod;
+    }
+
     public Double getDisposalValue() {
         return disposalValue;
+    }
+
+    public LocalDate getDisposalDate() {
+        return disposalDate;
     }
 
     public User getApprovedBy() {
         return approvedBy;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    // -------- SETTERS --------
     public void setAsset(Asset asset) {
         this.asset = asset;
     }
