@@ -2,12 +2,18 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.AuthRequest;
 import com.example.demo.dto.AuthResponse;
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
-import com.example.demo.service.UserService;
+import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.util.JwtUtil;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,43 +21,72 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService userService;
-    private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepository uRepo;
+    private final RoleRepository roleRepo;
+    private final JwtUtil jwt;
+    private final BCryptPasswordEncoder enc;
 
-    public AuthController(UserService userService,
-                          JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
+    public AuthController(UserRepository uRepo, RoleRepository roleRepo, JwtUtil jwt, BCryptPasswordEncoder enc) {
+        this.uRepo = uRepo;
+        this.roleRepo = roleRepo;
+        this.jwt = jwt;
+        this.enc = enc;
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
-        return userService.registerUser(user);
+    public AuthResponse register(@RequestBody User user) {
+
+        // Validate unique email
+        if (uRepo.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        // Hash password
+        user.setPassword(enc.encode(user.getPassword()));
+
+        // Ensure USER role exists
+        Role userRole = roleRepo.findByName("USER")
+                .orElseGet(() -> roleRepo.save(new Role("USER")));
+
+        // Assign USER role by default
+        user.getRoles().add(userRole);
+
+        // Save user
+        User savedUser = uRepo.save(user);
+
+        // Prepare roles set for token
+        Set<String> roleNames = savedUser.getRoles()
+                .stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+
+        // Generate JWT token
+        String token = jwt.generateToken(savedUser.getEmail(), savedUser.getId(), roleNames);
+
+        return new AuthResponse(token, savedUser.getId(), savedUser.getEmail(), roleNames);
     }
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
 
-        User user = userService.findByEmail(request.getEmail());
+        // Load user
+        User user = uRepo.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        // Validate password
+        if (!enc.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Invalid credentials");
         }
 
-        Set<String> roles = user.getRoles()
+        // Extract roles
+        Set<String> roleNames = user.getRoles()
                 .stream()
-                .map(r -> r.getName())
+                .map(Role::getName)
                 .collect(Collectors.toSet());
 
-        String token = jwtUtil.generateToken(
-                user.getEmail(),
-                user.getId(),
-                roles
-        );
+        // Generate token
+        String token = jwt.generateToken(user.getEmail(), user.getId(), roleNames);
 
-        return new AuthResponse(token, user.getId(), user.getEmail(), roles);
+        return new AuthResponse(token, user.getId(), user.getEmail(), roleNames);
     }
 }
