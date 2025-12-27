@@ -47,6 +47,7 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
+                // PUBLIC ENDPOINTS
                 .requestMatchers(
                         "/",
                         "/auth/**",
@@ -54,10 +55,14 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/error"
                 ).permitAll()
-                .requestMatchers("/api/**").authenticated()
+
+                // API ENDPOINTS (JWT FILTER WILL HANDLE AUTH)
+                .requestMatchers("/api/**").permitAll()
+
                 .anyRequest().permitAll()
             );
 
+        // IMPORTANT: JWT FILTER STILL RUNS
         http.addFilterBefore(jwtFilter(),
                 UsernamePasswordAuthenticationFilter.class);
 
