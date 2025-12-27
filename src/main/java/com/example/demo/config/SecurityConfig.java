@@ -3,12 +3,17 @@ package com.example.demo.config;
 import com.example.demo.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -33,9 +38,25 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(false);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
 
             .exceptionHandling(ex ->
@@ -47,7 +68,6 @@ public class SecurityConfig {
             )
 
             .authorizeHttpRequests(auth -> auth
-                // PUBLIC ENDPOINTS
                 .requestMatchers(
                         "/",
                         "/auth/**",
@@ -55,14 +75,10 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/error"
                 ).permitAll()
-
-                // API ENDPOINTS (JWT FILTER WILL HANDLE AUTH)
                 .requestMatchers("/api/**").permitAll()
-
                 .anyRequest().permitAll()
             );
 
-        // IMPORTANT: JWT FILTER STILL RUNS
         http.addFilterBefore(jwtFilter(),
                 UsernamePasswordAuthenticationFilter.class);
 
