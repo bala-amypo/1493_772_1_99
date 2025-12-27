@@ -1,85 +1,56 @@
-package com.example.demo.config;
-
-import com.example.demo.entity.DepreciationRule;
-import com.example.demo.entity.Role;
-import com.example.demo.entity.User;
-import com.example.demo.repository.DepreciationRuleRepository;
-import com.example.demo.repository.RoleRepository;
-import com.example.demo.repository.UserRepository;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
 @Configuration
 public class DataSeeder {
 
     @Bean
     CommandLineRunner seed(UserRepository userRepository,
                            RoleRepository roleRepository,
-                           DepreciationRuleRepository depreciationRuleRepository,
+                           DepreciationRuleRepository ruleRepository,
                            PasswordEncoder passwordEncoder) {
+
         return args -> {
 
-            // ----- ROLES -----
-            if (roleRepository.count() == 0) {
-                Role adminRole = new Role("ADMIN");
-                Role userRole = new Role("USER");
-                roleRepository.save(adminRole);
-                roleRepository.save(userRole);
-            }
+            // ---------- ROLES ----------
+            Role adminRole = roleRepository.findByName("ADMIN")
+                    .orElseGet(() -> roleRepository.save(new Role("ADMIN")));
 
-            // ----- USERS -----
-            if (userRepository.count() == 0) {
-                // Fetch roles using Optional
-                Role adminRole = roleRepository.findByName("ADMIN")
-                        .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
-                Role userRole = roleRepository.findByName("USER")
-                        .orElseThrow(() -> new RuntimeException("USER role not found"));
+            Role userRole = roleRepository.findByName("USER")
+                    .orElseGet(() -> roleRepository.save(new Role("USER")));
 
-                User admin = new User();
-                admin.setName("admin");               
-                admin.setEmail("admin@example.com");
-                admin.setPassword(passwordEncoder.encode("admin123"));
-                Set<Role> adminRoles = new HashSet<>();
-                adminRoles.add(adminRole);
-                admin.setRoles(adminRoles);
-                userRepository.save(admin);
+            // ---------- ADMIN USER ----------
+            userRepository.findByEmail("integration_admin@example.com")
+                    .orElseGet(() -> {
+                        User admin = new User();
+                        admin.setName("IntegrationAdmin");
+                        admin.setEmail("integration_admin@example.com");
+                        admin.setPassword(passwordEncoder.encode("adminpass"));
+                        admin.getRoles().add(adminRole);
+                        return userRepository.save(admin);
+                    });
 
-                User normalUser = new User();
-                normalUser.setName("user");           
-                normalUser.setEmail("user@example.com");
-                normalUser.setPassword(passwordEncoder.encode("user123"));
-                Set<Role> userRoles = new HashSet<>();
-                userRoles.add(userRole);
-                normalUser.setRoles(userRoles);
-                userRepository.save(normalUser);
-            }
+            // ---------- NORMAL USER ----------
+            userRepository.findByEmail("integration_user@example.com")
+                    .orElseGet(() -> {
+                        User user = new User();
+                        user.setName("IntegrationUser");
+                        user.setEmail("integration_user@example.com");
+                        user.setPassword(passwordEncoder.encode("userpass"));
+                        user.getRoles().add(userRole);
+                        return userRepository.save(user);
+                    });
 
-            // ----- DEPRECIATION RULES -----
-            if (depreciationRuleRepository.count() == 0) {
-                DepreciationRule rule1 = new DepreciationRule();
-                rule1.setRuleName("Straight Line");
-                rule1.setMethod("SL");
-                rule1.setUsefulLifeYears(5);
-                rule1.setSalvageValue(1000);
-                rule1.setCreatedAt(LocalDateTime.now());
-                depreciationRuleRepository.save(rule1);
+            // ---------- DEPRECIATION RULE ----------
+            ruleRepository.findByRuleName("IntegrationRule")
+                    .orElseGet(() -> {
+                        DepreciationRule rule = new DepreciationRule();
+                        rule.setRuleName("IntegrationRule");
+                        rule.setMethod("STRAIGHT_LINE");
+                        rule.setUsefulLifeYears(5);
+                        rule.setSalvageValue(10.0);
+                        rule.setCreatedAt(LocalDateTime.now());
+                        return ruleRepository.save(rule);
+                    });
 
-                DepreciationRule rule2 = new DepreciationRule();
-                rule2.setRuleName("Declining Balance");
-                rule2.setMethod("DB");
-                rule2.setUsefulLifeYears(5);
-                rule2.setSalvageValue(1000);
-                rule2.setCreatedAt(LocalDateTime.now());
-                depreciationRuleRepository.save(rule2);
-            }
-
-            System.out.println("Seeding complete.");
+            System.out.println("Data seeding completed.");
         };
     }
 }
