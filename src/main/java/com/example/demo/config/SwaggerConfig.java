@@ -1,5 +1,4 @@
 package com.example.demo.config;
-
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
@@ -8,12 +7,8 @@ import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
-
     @Bean
     public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .servers(List.of(
-                        new Server().url("https://9017.pro604cr.amypo.ai/") // must be HTTP
-                ));
+        return new OpenAPI().servers(List.of(new Server().url("https://9293.408procr.amypo.ai/")));
     }
 }
