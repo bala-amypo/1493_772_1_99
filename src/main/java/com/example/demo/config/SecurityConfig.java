@@ -32,23 +32,23 @@ import java.util.stream.Collectors;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final AuthenticationEntryPoint authEntryPoint;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
 
     public SecurityConfig(JwtUtil jwtUtil,
-                          AuthenticationEntryPoint authEntryPoint) {
+                          AuthenticationEntryPoint authenticationEntryPoint) {
         this.jwtUtil = jwtUtil;
-        this.authEntryPoint = authEntryPoint;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
-    // ---------------- PASSWORD ENCODER ----------------
+    // -------- PASSWORD ENCODER --------
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ---------------- SECURITY FILTER CHAIN ----------------
+    // -------- SECURITY CONFIG --------
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
             .cors(Customizer.withDefaults())
@@ -56,7 +56,7 @@ public class SecurityConfig {
             .sessionManagement(sm ->
                     sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(ex ->
-                    ex.authenticationEntryPoint(authEntryPoint))
+                    ex.authenticationEntryPoint(authenticationEntryPoint))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(
                             "/auth/**",
@@ -73,9 +73,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ---------------- JWT FILTER ----------------
+    // -------- JWT FILTER --------
     @Bean
     public OncePerRequestFilter jwtAuthFilter() {
+
         return new OncePerRequestFilter() {
 
             @Override
@@ -93,7 +94,8 @@ public class SecurityConfig {
                         Claims claims = jwtUtil.getClaims(token);
 
                         @SuppressWarnings("unchecked")
-                        Set<String> roles = (Set<String>) claims.get("roles");
+                        Set<String> roles =
+                                (Set<String>) claims.get("roles");
 
                         List<SimpleGrantedAuthority> authorities =
                                 roles.stream()
