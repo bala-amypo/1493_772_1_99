@@ -10,18 +10,21 @@ public class DepreciationRule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private Double rate;
-
+    private String ruleName;       // Rule name
+    private String method;         // Depreciation method (e.g., "SLM")
+    private int usefulLifeYears;   // Useful life in years
+    private double salvageValue;   // Residual value
     private LocalDateTime createdAt;
 
     // No-args constructor
     public DepreciationRule() {}
 
     // All-args constructor
-    public DepreciationRule(String name, Double rate) {
-        this.name = name;
-        this.rate = rate;
+    public DepreciationRule(String ruleName, String method, int usefulLifeYears, double salvageValue) {
+        this.ruleName = ruleName;
+        this.method = method;
+        this.usefulLifeYears = usefulLifeYears;
+        this.salvageValue = salvageValue;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -29,11 +32,17 @@ public class DepreciationRule {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getRuleName() { return ruleName; }
+    public void setRuleName(String ruleName) { this.ruleName = ruleName; }
 
-    public Double getRate() { return rate; }
-    public void setRate(Double rate) { this.rate = rate; }
+    public String getMethod() { return method; }
+    public void setMethod(String method) { this.method = method; }
+
+    public int getUsefulLifeYears() { return usefulLifeYears; }
+    public void setUsefulLifeYears(int usefulLifeYears) { this.usefulLifeYears = usefulLifeYears; }
+
+    public double getSalvageValue() { return salvageValue; }
+    public void setSalvageValue(double salvageValue) { this.salvageValue = salvageValue; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
