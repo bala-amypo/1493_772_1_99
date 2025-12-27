@@ -13,7 +13,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .servers(List.of(
-                        new Server().url("http://9017.pro604cr.amypo.ai/") // must be HTTP
+                        new Server().url("https://9017.pro604cr.amypo.ai/") // must be HTTP
                 ));
     }
 }
