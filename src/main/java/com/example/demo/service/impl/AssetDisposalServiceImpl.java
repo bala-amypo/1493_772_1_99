@@ -3,12 +3,15 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.Asset;
 import com.example.demo.entity.AssetDisposal;
 import com.example.demo.entity.User;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.AssetDisposalRepository;
 import com.example.demo.repository.AssetRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.AssetDisposalService;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 public class AssetDisposalServiceImpl implements AssetDisposalService {
@@ -27,11 +30,16 @@ public class AssetDisposalServiceImpl implements AssetDisposalService {
     }
 
     @Override
-    public AssetDisposal requestDisposal(Long assetId,
-                                         AssetDisposal disposal) {
+    public AssetDisposal requestDisposal(Long assetId, AssetDisposal disposal) {
 
-        if (disposal.getDisposalValue() < 0)
-            throw new IllegalArgumentException("Invalid value");
+        if (disposal.getDisposalValue() == null || disposal.getDisposalValue() < 0) {
+            throw new BadRequestException("Disposal value must be non-negative");
+        }
+
+        if (disposal.getDisposalDate() != null &&
+                disposal.getDisposalDate().isAfter(LocalDate.now())) {
+            throw new BadRequestException("Disposal date cannot be in the future");
+        }
 
         Asset asset = assetRepository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
@@ -46,6 +54,10 @@ public class AssetDisposalServiceImpl implements AssetDisposalService {
         AssetDisposal disposal = disposalRepository.findById(disposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Disposal not found"));
 
+        if (disposal.getApprovedBy() != null) {
+            throw new BadRequestException("Disposal already approved");
+        }
+
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -53,8 +65,9 @@ public class AssetDisposalServiceImpl implements AssetDisposalService {
                 .stream()
                 .anyMatch(r -> "ADMIN".equals(r.getName()));
 
-        if (!isAdmin)
-            throw new IllegalArgumentException("Not admin");
+        if (!isAdmin) {
+            throw new BadRequestException("Only admin can approve disposal");
+        }
 
         disposal.setApprovedBy(admin);
 

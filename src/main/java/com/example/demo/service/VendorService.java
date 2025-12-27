@@ -1,14 +1,14 @@
-package com.example.demo.service;
+    package com.example.demo.service;
 
-import com.example.demo.entity.Vendor;
+    import com.example.demo.entity.Vendor;
 
-import java.util.List;
+    import java.util.List;
 
-public interface VendorService {
+    public interface VendorService {
 
-    Vendor createVendor(Vendor vendor);
+        Vendor createVendor(Vendor vendor);
 
-    List<Vendor> getAllVendors();
+        List<Vendor> getAllVendors();
 
-    Vendor getVendor(Long id);
-}
+        Vendor getVendor(Long id);
+    }
