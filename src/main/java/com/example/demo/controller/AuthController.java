@@ -44,7 +44,11 @@ public class AuthController {
         try {
             Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            User user = userRepo.findByEmail(req.getEmail()).orElseThrow();
+            User user = userRepo.findByEmail(req.getEmail()).orElse(null);
+if (user == null) {
+    return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+}
+
             Set<String> roles = user.getRoles().stream().map(r -> r.getName()).collect(Collectors.toSet());
             String token = jwtUtil.generateToken(user.getEmail(), user.getId(), roles);
             return ResponseEntity.ok(new AuthResponse(token, user.getId(), user.getEmail(), roles));
