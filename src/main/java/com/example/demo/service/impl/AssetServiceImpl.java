@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.Asset;
 import com.example.demo.entity.DepreciationRule;
 import com.example.demo.entity.Vendor;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.AssetRepository;
 import com.example.demo.repository.DepreciationRuleRepository;
@@ -30,11 +31,21 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public Asset createAsset(Long vendorId, Long ruleId, Asset asset) {
 
-        if (asset.getPurchaseCost() <= 0)
-            throw new IllegalArgumentException("Invalid cost");
+        if (asset == null) {
+            throw new BadRequestException("Asset payload is required");
+        }
 
-        if (assetRepository.existsByAssetTag(asset.getAssetTag()))
-            throw new IllegalArgumentException("Duplicate tag");
+        if (asset.getAssetTag() == null || asset.getAssetTag().isBlank()) {
+            throw new BadRequestException("Asset tag is required");
+        }
+
+        if (asset.getPurchaseCost() == null || asset.getPurchaseCost() <= 0) {
+            throw new BadRequestException("Purchase cost must be greater than zero");
+        }
+
+        if (assetRepository.existsByAssetTag(asset.getAssetTag())) {
+            throw new BadRequestException("Asset tag already exists");
+        }
 
         Vendor vendor = vendorRepository.findById(vendorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vendor not found"));

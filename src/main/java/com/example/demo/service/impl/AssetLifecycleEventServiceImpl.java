@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.Asset;
 import com.example.demo.entity.AssetLifecycleEvent;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.AssetLifecycleEventRepository;
 import com.example.demo.repository.AssetRepository;
@@ -33,11 +34,17 @@ public class AssetLifecycleEventServiceImpl
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
 
         if (event.getEventDescription() == null ||
-            event.getEventDescription().isBlank())
-            throw new IllegalArgumentException("Description required");
+            event.getEventDescription().isBlank()) {
+            throw new BadRequestException("Event description is required");
+        }
 
-        if (event.getEventDate().isAfter(LocalDate.now()))
-            throw new IllegalArgumentException("Future date");
+        if (event.getEventDate() == null) {
+            throw new BadRequestException("Event date is required");
+        }
+
+        if (event.getEventDate().isAfter(LocalDate.now())) {
+            throw new BadRequestException("Event date cannot be in the future");
+        }
 
         event.setAsset(asset);
         return eventRepository.save(event);
@@ -45,6 +52,7 @@ public class AssetLifecycleEventServiceImpl
 
     @Override
     public List<AssetLifecycleEvent> getEventsForAsset(Long assetId) {
+
         assetRepository.findById(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
 
