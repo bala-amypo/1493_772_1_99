@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.Vendor;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.VendorRepository;
 import com.example.demo.service.VendorService;
@@ -12,6 +13,9 @@ import java.util.regex.Pattern;
 @Service
 public class VendorServiceImpl implements VendorService {
 
+    private static final String EMAIL_REGEX =
+            "^[A-Za-z0-9+_.-]+@(.+)$";
+
     private final VendorRepository vendorRepository;
 
     public VendorServiceImpl(VendorRepository vendorRepository) {
@@ -21,12 +25,21 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public Vendor createVendor(Vendor vendor) {
 
-        vendorRepository.findByVendorName(vendor.getVendorName())
-                .ifPresent(v -> { throw new IllegalArgumentException("Duplicate vendor"); });
+        if (vendor == null) {
+            throw new BadRequestException("Vendor payload is required");
+        }
 
-        if (vendor.getContactEmail() != null &&
-            !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", vendor.getContactEmail())) {
-            throw new IllegalArgumentException("Invalid email");
+        if (vendor.getVendorName() == null || vendor.getVendorName().isBlank()) {
+            throw new BadRequestException("Vendor name is required");
+        }
+
+        if (vendorRepository.findByVendorName(vendor.getVendorName()).isPresent()) {
+            throw new BadRequestException("Vendor name already exists");
+        }
+
+        if (vendor.getContactEmail() == null ||
+            !Pattern.matches(EMAIL_REGEX, vendor.getContactEmail())) {
+            throw new BadRequestException("Valid contact email is required");
         }
 
         return vendorRepository.save(vendor);
