@@ -7,7 +7,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.JwtUtil;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -20,12 +20,12 @@ public class AuthController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final JwtUtil jwtUtil;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder; // ✅ FIXED
 
     public AuthController(UserRepository userRepository,
                           RoleRepository roleRepository,
                           JwtUtil jwtUtil,
-                          BCryptPasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.jwtUtil = jwtUtil;
