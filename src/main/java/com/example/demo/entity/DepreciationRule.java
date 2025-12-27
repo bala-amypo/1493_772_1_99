@@ -10,25 +10,17 @@ public class DepreciationRule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String ruleName;       // Rule name
-    private String method;         // Depreciation method (e.g., "SLM")
-    private int usefulLifeYears;   // Useful life in years
-    private double salvageValue;   // Residual value
+    private String ruleName;
+    private String method;
+    private int usefulLifeYears;
+    private double salvageValue;
+
     private LocalDateTime createdAt;
 
-    // No-args constructor
+    // Constructors
     public DepreciationRule() {}
 
-    // All-args constructor
-    public DepreciationRule(String ruleName, String method, int usefulLifeYears, double salvageValue) {
-        this.ruleName = ruleName;
-        this.method = method;
-        this.usefulLifeYears = usefulLifeYears;
-        this.salvageValue = salvageValue;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    // Getters and Setters
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
