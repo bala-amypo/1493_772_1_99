@@ -35,11 +35,14 @@ public class DataSeeder {
 
             // ----- USERS -----
             if (userRepository.count() == 0) {
-                Role adminRole = roleRepository.findByName("ADMIN");
-                Role userRole = roleRepository.findByName("USER");
+                // Fetch roles using Optional
+                Role adminRole = roleRepository.findByName("ADMIN")
+                        .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
+                Role userRole = roleRepository.findByName("USER")
+                        .orElseThrow(() -> new RuntimeException("USER role not found"));
 
                 User admin = new User();
-                admin.setName("admin");               // Changed from setUsername()
+                admin.setName("admin");               
                 admin.setEmail("admin@example.com");
                 admin.setPassword(passwordEncoder.encode("admin123"));
                 Set<Role> adminRoles = new HashSet<>();
@@ -48,7 +51,7 @@ public class DataSeeder {
                 userRepository.save(admin);
 
                 User normalUser = new User();
-                normalUser.setName("user");           // Changed from setUsername()
+                normalUser.setName("user");           
                 normalUser.setEmail("user@example.com");
                 normalUser.setPassword(passwordEncoder.encode("user123"));
                 Set<Role> userRoles = new HashSet<>();
